@@ -40,7 +40,8 @@ jobs:
                 "docker pull ${{ secrets.ECR_REPO_URL_MASCOTA }}:latest",
                 "docker stop ms-mascota || true",
                 "docker rm ms-mascota || true",
-                "docker run -d --name ms-mascota -p 8081:8081 -e JAVA_OPTS=\"-Xmx250m\" --memory=\"350m\" -e DB_URL=\"${{ secrets.DB_URL }}\" -e DB_USERNAME=\"${{ secrets.DB_USERNAME }}\" -e DB_PASSWORD=\"${{ secrets.DB_PASSWORD }}\" -e EUREKA_URL=\"${{ secrets.EUREKA_URL }}\" ${{ secrets.ECR_REPO_URL_MASCOTA }}:latest"
+                "export EC2_IP=$(curl -s http://169.254.169.254/latest/meta-data/local-ipv4)",
+                "docker run -d --name ms-mascota -p 8081:8081 -e JAVA_OPTS=\"-Xmx250m\" --memory=\"350m\" -e DB_URL=\"${{ secrets.DB_URL }}\" -e DB_USERNAME=\"${{ secrets.DB_USERNAME }}\" -e DB_PASSWORD=\"${{ secrets.DB_PASSWORD }}\" -e EUREKA_URL=\"${{ secrets.EUREKA_URL }}\" -e EUREKA_INSTANCE_PREFER_IP_ADDRESS=\"true\" -e EUREKA_INSTANCE_IP_ADDRESS=\"$EC2_IP\" ${{ secrets.ECR_REPO_URL_MASCOTA }}:latest"
               ]
             }' \
             --query "Command.CommandId" \
