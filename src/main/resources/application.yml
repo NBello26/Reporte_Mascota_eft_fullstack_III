@@ -23,7 +23,7 @@ spring:
 # CONFIGURACIÓN DE EUREKA CLIENT
 eureka:
   instance:
-    prefer-ip-address: true  # <--- ESTA ES LA CLAVE
+    prefer-ip-address: true
   client:
     service-url:
       defaultZone: ${EUREKA_URL:http://localhost:8761/eureka/}
