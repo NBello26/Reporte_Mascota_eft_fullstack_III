@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mascotas-deployment
+  labels:
+    app: ms-mascotas
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ms-mascotas
+  template:
+    metadata:
+      labels:
+        app: ms-mascotas
+    spec:
+      containers:
+      - name: ms-mascotas
+        image: 782424855823.dkr.ecr.us-east-1.amazonaws.com/ms-mascotas:${IMAGE_TAG}
+        ports:
+        - containerPort: 8081
+        env:
+        # Inyectamos la URL apuntando a la BD pero a su respectiva base lógica (db_mascotas)
+        - name: DB_URL
+          value: "jdbc:postgresql://sanosdb-service:5432/db_mascotas"
+        - name: DB_USERNAME
+          value: "admin"
+        - name: DB_PASSWORD
+          value: "admin"
+        - name: EUREKA_URL
+          value: "http://eureka-service:8761/eureka/"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mascotas-service
+spec:
+  type: ClusterIP # AISLADO: Solo accesible dentro del cluster
+  selector:
+    app: ms-mascotas
+  ports:
+    - protocol: TCP
+      port: 8081
+      targetPort: 8081
