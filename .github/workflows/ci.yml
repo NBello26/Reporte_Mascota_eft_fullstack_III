@@ -45,5 +45,8 @@ jobs:
       env:
         IMAGE_TAG: ${{ github.sha }}
       run: |
+        # 1. Reemplazamos el tag de la imagen sólo en el archivo de mascotas
         sed -i "s|\\\${IMAGE_TAG}|$IMAGE_TAG|g" k8s/mascotas.yml
-        kubectl apply -f k8s/mascotas.yml
+        
+        # 2. Le decimos a kubectl que aplique TODOS los archivos .yml que encuentre en la carpeta k8s/
+        kubectl apply -f k8s/

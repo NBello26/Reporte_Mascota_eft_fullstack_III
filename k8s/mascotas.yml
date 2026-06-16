@@ -1,3 +1,55 @@
+# ========================================================
+# 1. DEPLOYMENT DE RABBITMQ
+# ========================================================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rabbitmq-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rabbitmq
+  template:
+    metadata:
+      labels:
+        app: rabbitmq
+    spec:
+      containers:
+      - name: rabbitmq
+        image: rabbitmq:3-management
+        ports:
+        - containerPort: 5672
+        - containerPort: 15672
+        env:
+        - name: RABBITMQ_DEFAULT_USER
+          value: "guest"
+        - name: RABBITMQ_DEFAULT_PASS
+          value: "guest"
+---
+# ========================================================
+# 2. SERVICIO DE RABBITMQ
+# ========================================================
+apiVersion: v1
+kind: Service
+metadata:
+  name: rabbitmq-service
+spec:
+  selector:
+    app: rabbitmq
+  ports:
+  - protocol: TCP
+    port: 5672
+    targetPort: 5672
+    name: amqp
+  - protocol: TCP
+    port: 15672
+    targetPort: 15672
+    name: management
+---
+# ========================================================
+# 3. TU DEPLOYMENT DE MASCOTAS (Modificado con RabbitMQ)
+# ========================================================
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -20,7 +72,6 @@ spec:
         ports:
         - containerPort: 8081
         env:
-        # Inyectamos la URL apuntando a la BD pero a su respectiva base lógica (db_mascotas)
         - name: DB_URL
           value: "jdbc:postgresql://sanosdb-service:5432/db_mascotas"
         - name: DB_USERNAME
@@ -33,13 +84,25 @@ spec:
           value: "redis-service"
         - name: SPRING_DATA_REDIS_PORT
           value: "6379"
+        # ¡NUEVAS VARIABLES PARA LOS MASCOTAS!
+        - name: SPRING_RABBITMQ_HOST
+          value: "rabbitmq-service"
+        - name: SPRING_RABBITMQ_PORT
+          value: "5672"
+        - name: SPRING_RABBITMQ_USERNAME
+          value: "guest"
+        - name: SPRING_RABBITMQ_PASSWORD
+          value: "guest"
 ---
+# ========================================================
+# 4. TU SERVICIO DE MASCOTAS
+# ========================================================
 apiVersion: v1
 kind: Service
 metadata:
   name: mascotas-service
 spec:
-  type: ClusterIP # AISLADO: Solo accesible dentro del cluster
+  type: ClusterIP
   selector:
     app: ms-mascotas
   ports:
