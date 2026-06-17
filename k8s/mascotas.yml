@@ -23,9 +23,15 @@ spec:
         - containerPort: 15672
         env:
         - name: RABBITMQ_DEFAULT_USER
-          value: "guest"
+          valueFrom:
+            secretKeyRef:
+              name: app-secrets
+              key: rabbitmq-username
         - name: RABBITMQ_DEFAULT_PASS
-          value: "guest"
+          valueFrom:
+            secretKeyRef:
+              name: app-secrets
+              key: rabbitmq-password
 ---
 # ========================================================
 # 2. SERVICIO DE RABBITMQ
@@ -48,7 +54,7 @@ spec:
     name: management
 ---
 # ========================================================
-# 3. TU DEPLOYMENT DE MASCOTAS (Modificado con RabbitMQ)
+# 3. TU DEPLOYMENT DE MASCOTAS (Modificado con RabbitMQ y Secretos)
 # ========================================================
 apiVersion: apps/v1
 kind: Deployment
@@ -75,24 +81,35 @@ spec:
         - name: DB_URL
           value: "jdbc:postgresql://sanosdb-service:5432/db_mascotas"
         - name: DB_USERNAME
-          value: "admin"
+          valueFrom:
+            secretKeyRef:
+              name: app-secrets
+              key: db-username
         - name: DB_PASSWORD
-          value: "admin"
+          valueFrom:
+            secretKeyRef:
+              name: app-secrets
+              key: db-password
         - name: EUREKA_URL
           value: "http://eureka-service:8761/eureka/"
         - name: SPRING_DATA_REDIS_HOST
           value: "redis-service"
         - name: SPRING_DATA_REDIS_PORT
           value: "6379"
-        # ¡NUEVAS VARIABLES PARA LOS MASCOTAS!
         - name: SPRING_RABBITMQ_HOST
           value: "rabbitmq-service"
         - name: SPRING_RABBITMQ_PORT
           value: "5672"
         - name: SPRING_RABBITMQ_USERNAME
-          value: "guest"
+          valueFrom:
+            secretKeyRef:
+              name: app-secrets
+              key: rabbitmq-username
         - name: SPRING_RABBITMQ_PASSWORD
-          value: "guest"
+          valueFrom:
+            secretKeyRef:
+              name: app-secrets
+              key: rabbitmq-password
 ---
 # ========================================================
 # 4. TU SERVICIO DE MASCOTAS
