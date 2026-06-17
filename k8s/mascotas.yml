@@ -74,7 +74,7 @@ spec:
     spec:
       containers:
       - name: ms-mascotas
-        image: 782424855823.dkr.ecr.us-east-1.amazonaws.com/ms-mascotas:${IMAGE_TAG}
+        image: 085985863834.dkr.ecr.us-east-1.amazonaws.com/ms-mascotas:${IMAGE_TAG}
         ports:
         - containerPort: 8081
         env:
