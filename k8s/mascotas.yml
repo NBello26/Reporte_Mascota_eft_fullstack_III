@@ -63,7 +63,7 @@ metadata:
   labels:
     app: ms-mascotas
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: ms-mascotas
@@ -74,7 +74,7 @@ spec:
     spec:
       containers:
       - name: ms-mascotas
-        image: 085985863834.dkr.ecr.us-east-1.amazonaws.com/ms-mascotas:${IMAGE_TAG}
+        image: 871767013014.dkr.ecr.us-east-1.amazonaws.com/ms-mascotas:${IMAGE_TAG}
         ports:
         - containerPort: 8081
         env:
